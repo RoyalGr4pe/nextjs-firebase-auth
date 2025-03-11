@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
 
-const retrieveStripeCustomer = async (customerId: string | null, email: string) => {
+const retrieveStripeCustomer = async (customerId: string | null, email: string, referralCode: string | null) => {
 	const stripeAPIKey = process.env.LIVE_STRIPE_SECRET_KEY as string;
 
 	if (!stripeAPIKey) {
@@ -33,7 +33,10 @@ const retrieveStripeCustomer = async (customerId: string | null, email: string) 
 		} else {
 			// Create a new customer since one doesn't exist with the provided email
 			customer = await stripe.customers.create({
-				email: email
+				email: email,
+                metadata: {
+                    referralCode: referralCode
+                }
 			});
 			return customer;
 		}

@@ -16,7 +16,7 @@ const SignOutButton = () => {
         router.push("/");
     }
     return (
-        <button onClick={handleSignOut} className='hover:text-gray-400'>Sign Out</button>
+        <button onClick={handleSignOut} className='hover:bg-blue-600 bg-[#1a73e8] p-3 rounded-lg font-sans font-[500]'>Sign Out</button>
     )
 }
 

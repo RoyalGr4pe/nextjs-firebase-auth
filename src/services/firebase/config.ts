@@ -1,6 +1,6 @@
 import { getAuth } from "firebase/auth";
-import { getApp, getApps, initializeApp } from "firebase/app";
-import { getFirestore } from 'firebase/firestore'
+import { getFirestore } from 'firebase/firestore';
+import { getApp, getApps, initializeApp } from "firebase/app";    
 
 
 // Firebase Configuration

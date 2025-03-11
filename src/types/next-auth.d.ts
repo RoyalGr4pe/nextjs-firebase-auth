@@ -11,6 +11,7 @@ declare module "next-auth" {
     interface Session extends DefaultSession {
         id: string; 
         email: string; 
+        user: IUser;
     }
 
     interface JWT extends DefaultJWT {

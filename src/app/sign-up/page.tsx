@@ -33,7 +33,6 @@ const SignUp = () => {
     useEffect(() => {
         const checkVerificationInterval = setInterval(async () => {
             if (!auth.currentUser) return;
-            console.log(auth.currentUser)
 
             await auth.currentUser.reload();
             if (auth.currentUser.emailVerified) {
