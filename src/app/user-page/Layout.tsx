@@ -32,7 +32,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
 
     return (
-        <div>
+        <div className="h-screen">
             {children}
         </div>
     );

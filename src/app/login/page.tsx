@@ -1,6 +1,8 @@
 'use client'
 
 // Local Imports
+import { auth } from '@/services/firebase/config';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 // External Imports
 import { useRouter } from 'next/navigation';
@@ -18,11 +20,12 @@ const Login = () => {
             const result = await signIn("credentials", {
                 email,
                 password,
-                redirect: false, 
+                redirect: false,
             });
             if (result?.error) {
                 console.error("Sign-in error:", result.error);
             } else {
+                await signInWithEmailAndPassword(auth, email, password);
                 console.log("User signed in:", result);
                 router.push("/user-page"); // Redirect user on successful sign-in
             }

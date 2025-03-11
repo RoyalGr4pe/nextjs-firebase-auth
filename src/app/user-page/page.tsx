@@ -1,16 +1,22 @@
-import React from 'react'
-import { Layout } from './Layout';
+// Local Imports
 import UserData from './user-data';
+import { Layout } from './Layout';
 import SignOutButton from '../components/ui/SignOutButton';
+import UpdateAccountDetails from './UpdateAccountDetails';
 
-const page = () => {
+const UserPage = () => {
     return (
         <Layout>
-            <h1>User Page</h1>
-            <UserData />
-            <SignOutButton />
+            <div className='flex flex-col gap-4'>
+                <UserData />
+                <UpdateAccountDetails />
+                <div className='w-full text-center mt-4'>
+                    <SignOutButton />
+                </div>
+            </div>
+
         </Layout>
     )
 }
 
-export default page
+export default UserPage

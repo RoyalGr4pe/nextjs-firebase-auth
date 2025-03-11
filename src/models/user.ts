@@ -12,7 +12,7 @@ interface IUser {
     orders: { ebay: IEbayOrders | null };
     numListings: { automatic: number, manual: number } | null;
     numOrders: { automatic: number, manual: number } | null;
-    lastFetchedDate: { inventory: Date, orders: Date } | null;
+    lastFetchedDate: { inventory: string, orders: string } | null;
     preferences: IPreferences;
     authentication: IAuthentication;
     metaData: IMetaData;
@@ -23,7 +23,7 @@ interface IAuthentication {
 }
 
 interface IMetaData {
-    createdAt: Date;
+    createdAt: string;
 }
 
 interface IConnectedAcccounts {
@@ -44,7 +44,7 @@ interface IDiscord {
 interface IEbay {
     ebayAccessToken: string;
     ebayRefreshToken: string;
-    ebayTokenExpiry: Date;
+    ebayTokenExpiry: string;
 }
 
 interface IReferral {
@@ -59,7 +59,7 @@ interface IEbayInventory {
     itemName: string;
     price: number;
     quantity: number;
-    dateListed: Date;
+    dateListed: string;
     images: string[];
     recordType: RecordType;
 }
@@ -71,14 +71,14 @@ interface IEbayOrders {
     images: string[];
     itemName: string;
     legacyItemId: string;
-    listingDate: Date;
+    listingDate: string;
     orderId: string;
-    purchaseDate: Date;
+    purchaseDate: string;
     purchasePlatform: string;
     purchasePrice: number;
     quantitySold: number;
     recordType: RecordType;
-    saleDate: Date;
+    saleDate: string;
     salePlatform: string;
     salePrice: number;
     shippingFees: number;
