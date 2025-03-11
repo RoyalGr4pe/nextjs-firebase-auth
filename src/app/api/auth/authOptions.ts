@@ -50,7 +50,6 @@ export const authOptions: NextAuthOptions = {
 
                 try {
                     const userDoc: IUser = await retrieveUser(user.id, user.email) ?? {} as IUser;
-                    console.log("User Doc", userDoc)
                     token.user = userDoc;
                 } catch (error) {
                     console.error('Error retrieving user:', error);

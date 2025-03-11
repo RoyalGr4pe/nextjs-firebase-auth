@@ -16,12 +16,12 @@ export async function createUser(uid: string, email: string): Promise<IUser | vo
         const emptyUser: IUser = {
             id: uid,
             connectedAccounts: {
-                discordId: null,
+                discord: null,
+                ebay: null,
             }, 
             email: email,
             stripeCustomerId: customer.id,  
-            subscriptions: null,  
-            ebay: null,
+            subscriptions: null,
             referral: {
                 referralCode: generateReferralCode(),
                 referredBy: null,
@@ -38,13 +38,18 @@ export async function createUser(uid: string, email: string): Promise<IUser | vo
                 automatic: 0,
                 manual: 0,
             },
-            lastFetchedDate: null,
-            createdAt: new Date(),  
+            lastFetchedDate: null,  
             preferences: {
                 notificationsEnabled: false,
                 preferredEmail: email,
                 locale: 'GB', 
             },
+            authentication: {
+                emailVerified: 'verified'
+            },
+            metaData: {
+                createdAt: new Date()
+            }
         };
 
         await setDoc(userRef, emptyUser);

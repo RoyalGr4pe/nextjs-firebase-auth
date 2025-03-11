@@ -1,12 +1,18 @@
 "use client";
 
+// Local Imports
+import { auth } from "@/services/firebase/config";
+
+// External Imports
+import { signOut as firebaseSignOut } from 'firebase/auth';
+import { signOut as nextSignOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { signOut } from 'next-auth/react';
 
 const SignOutButton = () => {
     const router = useRouter();
     function handleSignOut() {
-        signOut();
+        nextSignOut();
+        firebaseSignOut(auth);
         router.push("/");
     }
     return (

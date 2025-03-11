@@ -1,6 +1,5 @@
-// External Imports
-
 type RecordType = "automatic" | "manual";
+type EmailVerification = "unverified" | "verifying" | "verified";
 
 interface IUser {
     id: string;
@@ -8,22 +7,29 @@ interface IUser {
     email: string;
     stripeCustomerId: string;
     subscriptions: ISubscription[] | null;
-    ebay: IEbay | null;
     referral: IReferral;
     inventory: { ebay: IEbayInventory | null };
     orders: { ebay: IEbayOrders | null };
     numListings: { automatic: number, manual: number } | null;
     numOrders: { automatic: number, manual: number } | null;
     lastFetchedDate: { inventory: Date, orders: Date } | null;
-    createdAt: Date;
     preferences: IPreferences;
+    authentication: IAuthentication;
+    metaData: IMetaData;
 }
 
+interface IAuthentication {
+    emailVerified: EmailVerification;
+}
+
+interface IMetaData {
+    createdAt: Date;
+}
 
 interface IConnectedAcccounts {
-    discordId: string | null;
+    discord: IDiscord | null;
+    ebay: IEbay | null;
 }
-
 
 interface ISubscription {
     id: string;
@@ -31,6 +37,9 @@ interface ISubscription {
     override: boolean;
 }
 
+interface IDiscord {
+    discordId: string;
+}
 
 interface IEbay {
     ebayAccessToken: string;
@@ -44,7 +53,6 @@ interface IReferral {
     validReferrals: string[];
     rewardsClaimed: number;
 }
-
 
 interface IEbayInventory {
     itemId: string;
@@ -81,6 +89,5 @@ interface IPreferences {
     preferredEmail: string;
     locale: string;
 }
-
 
 export type { IUser, ISubscription, IEbay, IReferral, IEbayInventory, IEbayOrders, IPreferences, RecordType, IConnectedAcccounts };
