@@ -13,22 +13,27 @@ import { signIn } from 'next-auth/react';
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const router = useRouter()
+    const [errorMessage, setErrorMessage] = useState('');
+    const router = useRouter();
+
+    const [loading, setLoading] = useState(false);
 
     const handleSignIn = async () => {
         try {
+            setLoading(true);
             const result = await signIn("credentials", {
                 email,
                 password,
                 redirect: false,
             });
             if (result?.error) {
-                console.error("Sign-in error:", result.error);
+                setErrorMessage("Invalid email or password");
             } else {
                 await signInWithEmailAndPassword(auth, email, password);
-                console.log("User signed in:", result);
+                setLoading(false);
                 router.push("/user-page"); // Redirect user on successful sign-in
             }
+            setLoading(false);
             setEmail('');
             setPassword('');
         } catch (e) {
@@ -54,11 +59,12 @@ const Login = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full p-3 mb-4 bg-gray-700 rounded outline-none text-white placeholder-gray-500"
                 />
+                <span className="text-red-500 text-sm">{errorMessage}</span>
                 <button
                     onClick={handleSignIn}
                     className="w-full p-3 bg-indigo-600 rounded text-white hover:bg-indigo-500"
                 >
-                    Login
+                    {loading ? "Processing...": "Login"}
                 </button>
                 <div className='flex flex-row gap-1 mt-3 justify-center'>
                     <p>Don&apos;t have an account? </p>

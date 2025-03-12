@@ -3,7 +3,7 @@ type EmailVerification = "unverified" | "verifying" | "verified";
 
 interface IUser {
     id: string;
-    connectedAccounts: IConnectedAcccounts;
+    connectedAccounts: IConnectedAccounts;
     email: string;
     stripeCustomerId: string;
     subscriptions: ISubscription[] | null;
@@ -26,7 +26,7 @@ interface IMetaData {
     createdAt: string;
 }
 
-interface IConnectedAcccounts {
+interface IConnectedAccounts {
     discord: IDiscord | null;
     ebay: IEbay | null;
 }
@@ -90,4 +90,4 @@ interface IPreferences {
     locale: string;
 }
 
-export type { IUser, ISubscription, IEbay, IReferral, IEbayInventory, IEbayOrders, IPreferences, RecordType, IConnectedAcccounts };
+export type { IUser, ISubscription, IEbay, IReferral, IEbayInventory, IEbayOrders, IPreferences, RecordType, IConnectedAccounts };
