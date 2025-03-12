@@ -11,7 +11,7 @@ import { Lock, Mail } from "lucide-react";
 import { useState } from "react";
 
 
-async function updateUserEmail(newEmail: string, currentPassword: string): Promise<{ success: boolean, error?: string }> {
+async function updateUserEmail(newEmail: string, currentPassword: string, setNewEmailMessage: (value: string) => void, setEmailSuccessfullyUpdated: (value: boolean) => void): Promise<{ success: boolean, error?: string }> {
     let success = false;
     let error = "";
 
@@ -24,6 +24,7 @@ async function updateUserEmail(newEmail: string, currentPassword: string): Promi
         const credential = EmailAuthProvider.credential(auth.currentUser.email!, currentPassword);
         await reauthenticateWithCredential(auth.currentUser, credential);
 
+        setNewEmailMessage("Please verify your new email address.");
         // Send verification email before updating
         await verifyBeforeUpdateEmail(auth.currentUser, newEmail);
 
@@ -38,8 +39,12 @@ async function updateUserEmail(newEmail: string, currentPassword: string): Promi
                 const userDoc = await getDoc(userRef);
                 const user = userDoc.data() as IUser;
                 const userHasAPreferredEmail = user.preferences.preferredEmail !== user.email;
-                await updateDoc(userRef, { email: newEmail, preferences: { preferredEmail: userHasAPreferredEmail ? user.preferences.preferredEmail : newEmail } });
-
+                await updateDoc(userRef, { 
+                    email: newEmail, 
+                    "preferences.preferredEmail": userHasAPreferredEmail ? user.preferences.preferredEmail : newEmail
+                });
+                setNewEmailMessage("");
+                setEmailSuccessfullyUpdated(true);
                 success = true;
             }
         }, 5000); // Check every 5 seconds
@@ -50,7 +55,7 @@ async function updateUserEmail(newEmail: string, currentPassword: string): Promi
     return { success: success, error: error };
 };
 
-async function updateUserPassword(newPassword: string, currentPassword: string): Promise<{ success: boolean, error?: string }> {
+async function updateUserPassword(newPassword: string, currentPassword: string, setNewPasswordMessage: (value: string) => void, setPasswordSuccessfullyUpdated: (value: boolean) => void): Promise<{ success: boolean, error?: string }> {
     let success = false;
     let error = "";
 
@@ -64,6 +69,7 @@ async function updateUserPassword(newPassword: string, currentPassword: string):
         await reauthenticateWithCredential(auth.currentUser, credential);
 
         await updatePassword(auth.currentUser, newPassword);
+        setPasswordSuccessfullyUpdated(true);
         success = true;
     } catch (err) {
         error = `Error updating password: ${err}`;
@@ -73,7 +79,6 @@ async function updateUserPassword(newPassword: string, currentPassword: string):
 };
 
 const UpdateAccountDetails = () => {
-    console.log("Creds", auth.currentUser)
     // Email Changes
     const [newEmail, setNewEmail] = useState("");
     const [emailSuccessfullyUpdated, setEmailSuccessfullyUpdated] = useState(false);
@@ -85,8 +90,13 @@ const UpdateAccountDetails = () => {
     // Password Changes
     const [newPassword, setNewPassword] = useState("");
     const [newConfirmedPassword, setNewConfirmedPassword] = useState("");
-    const [currentPassword, setCurrentPassword] = useState("");
+    const [currentPasswordForEmail, setCurrentPasswordForEmail] = useState("");
+    const [currentPasswordForPassword, setCurrentPasswordForPassword] = useState("");
     const [passwordSuccessfullyUpdated, setPasswordSuccessfullyUpdated] = useState(false);
+
+    // Info Messages
+    const [newEmailMessage, setNewEmailMessage] = useState("");
+    const [newPasswordMessage, setNewPasswordMessage] = useState("");
 
     // Error Messages
     const [errorNewEmailMessage, setNewEmailErrorMessage] = useState("");
@@ -94,12 +104,12 @@ const UpdateAccountDetails = () => {
 
     const handleEmailUpdate = async () => {
         setEmailIsLoading(true);
-        if (!newEmail || !currentPassword) {
+        if (!newEmail || !currentPasswordForEmail) {
             setNewEmailErrorMessage("Please provide the new email and current password.");
             setEmailIsLoading(false);
             return;
         }
-        const { success, error } = await updateUserEmail(newEmail, currentPassword);
+        const { success, error } = await updateUserEmail(newEmail, currentPasswordForEmail, setNewEmailMessage, setEmailSuccessfullyUpdated);
         if (!success) {
             setNewEmailErrorMessage(error ?? "An unknown error occurred while updating your email.");
         } else {
@@ -111,12 +121,12 @@ const UpdateAccountDetails = () => {
 
     const handlePasswordUpdate = async () => {
         setPasswordIsLoading(true);
-        if (!newPassword || !currentPassword || (newPassword !== newConfirmedPassword)) {
+        if (!newPassword || !currentPasswordForPassword || (newPassword !== newConfirmedPassword)) {
             setNewPasswordErrorMessage("Please provide the new password and current password.");
             setPasswordIsLoading(false);
             return;
         }
-        const { success, error } = await updateUserPassword(newPassword, currentPassword);
+        const { success, error } = await updateUserPassword(newPassword, currentPasswordForPassword, setNewPasswordMessage, setPasswordSuccessfullyUpdated);
         if (!success) {
             setNewPasswordErrorMessage(error ?? "An unknown error occurred while updating your password.");
         } else {
@@ -127,14 +137,14 @@ const UpdateAccountDetails = () => {
 
     return (
         <div className="flex items-center justify-center">
-            <div className="bg-gray-800 p-8 rounded-lg shadow-xl w-96 text-center">
+            <div className="bg-gray-800 p-8 rounded-lg shadow-xl max-w-md text-center">
                 <h1 className="text-white text-2xl mb-5">Update Account Details</h1>
 
                 <input
                     type="password"
                     placeholder="Current Password"
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    value={currentPasswordForEmail}
+                    onChange={(e) => setCurrentPasswordForEmail(e.target.value)}
                     className="w-full p-3 mb-4 bg-gray-700 rounded outline-none text-white placeholder-gray-500"
                 />
 
@@ -145,6 +155,7 @@ const UpdateAccountDetails = () => {
                     onChange={(e) => setNewEmail(e.target.value)}
                     className="w-full p-3 mb-4 bg-gray-700 rounded outline-none text-white placeholder-gray-500"
                 />
+                <span className="text-sm">{newEmailMessage}</span>
                 <span className="text-green-500 text-sm">{emailSuccessfullyUpdated ? "Email Successfully Updated": ""}</span>
                 <span className="text-red-500 text-sm">{errorNewEmailMessage}</span>
                 <button
@@ -156,12 +167,19 @@ const UpdateAccountDetails = () => {
                         {isEmailLoading ? "Processing..." : (
                             <>
                                 <Mail className="mr-2 h-4 w-4" />
-                                Update Email
+                                {isEmailLoading ? "Processing...": "Update Email"}
                             </>
                         )}
                     </span>
                 </button>
 
+                <input
+                    type="password"
+                    placeholder="Current Password"
+                    value={currentPasswordForPassword}
+                    onChange={(e) => setCurrentPasswordForPassword(e.target.value)}
+                    className="w-full p-3 mb-4 bg-gray-700 rounded outline-none text-white placeholder-gray-500"
+                />
                 <input
                     type="password"
                     placeholder="New Password"
@@ -176,7 +194,7 @@ const UpdateAccountDetails = () => {
                     onChange={(e) => setNewConfirmedPassword(e.target.value)}
                     className="w-full p-3 mb-4 bg-gray-700 rounded outline-none text-white placeholder-gray-500"
                 />
-
+                <span className="text-sm">{newPasswordMessage}</span>
                 <span className="text-green-500 text-sm">{passwordSuccessfullyUpdated ? "Password Successfully Updated" : ""}</span>
                 <span className="text-red-500 text-sm">{errorNewPasswordMessage}</span>
                 <button
@@ -188,7 +206,7 @@ const UpdateAccountDetails = () => {
                         {isPasswordLoading ? "Processing..." : (
                             <>
                                 <Lock className="mr-2 h-4 w-4" />
-                                Update Password
+                                {isPasswordLoading ? "Processing...": "Update Password"}
                             </>
                         )}
                     </span>

@@ -26,7 +26,7 @@ const UserData = () => {
     if (!session) return <p>No user session found</p>;
     const user = session.user;
     return (
-        <div className='w-full bg-[#111111] rounded-lg text-sm font-sans font-[500] text-gray-500'>
+        <div className='w-full bg-gray-800 rounded-lg text-sm font-sans font-[500] text-gray-400 max-w-md'>
             <div className='w-full flex flex-row items-center p-4 border-b border-[#000011]'>
                 <h1 className='w-full flex justify-start'>Email</h1>
                 <p className='w-full flex justify-end'>{user.email}</p>

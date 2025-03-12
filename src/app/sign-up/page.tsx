@@ -18,6 +18,7 @@ const SignUp = () => {
     const [password, setPassword] = useState('');
     const [emailVerifying, setEmailVerifying] = useState(false);
     const [emailVerified, setEmailVerified] = useState(false);
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     // Persist email and password using useRef
@@ -56,6 +57,7 @@ const SignUp = () => {
 
     const handleSignUp = async () => {
         try {
+            setLoading(true);
             const { user } = await createUserWithEmailAndPassword(auth, email, password);
 
             emailRef.current = email;
@@ -63,6 +65,7 @@ const SignUp = () => {
 
             await sendEmailVerification(user);
             setEmailVerifying(true);
+            setLoading(false);
         } catch (e) {
             console.error(e);
         }
@@ -78,6 +81,7 @@ const SignUp = () => {
                     setPassword={setPassword}
                     handleSignUp={handleSignUp}
                     router={router}
+                    loading={loading}
                 />
             ) : (
                 emailVerified ? (
@@ -117,9 +121,10 @@ interface SigningUpProps {
     setPassword: (password: string) => void;
     handleSignUp: () => void;
     router: AppRouterInstance;
+    loading: boolean;
 }
 
-const SigningUp: React.FC<SigningUpProps> = ({ email, password, setEmail, setPassword, handleSignUp, router }) => {
+const SigningUp: React.FC<SigningUpProps> = ({ email, password, setEmail, setPassword, handleSignUp, router, loading }) => {
     return (
         <div className="bg-gray-800 p-10 rounded-lg shadow-xl w-96">
             <>
@@ -142,7 +147,7 @@ const SigningUp: React.FC<SigningUpProps> = ({ email, password, setEmail, setPas
                     onClick={handleSignUp}
                     className="w-full p-3 bg-indigo-600 rounded text-white hover:bg-indigo-500"
                 >
-                    Sign Up
+                    {loading ? "Processing..." : "Sign Up"}
                 </button>
                 <div className='flex flex-row gap-1 mt-3 justify-center'>
                     <p>Already have an account? </p>
